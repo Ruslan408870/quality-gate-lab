@@ -1,5 +1,35 @@
-- name: Установить Ruff и Pytest
+name: Quality Gate CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  check-quality:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Скачать код репозитория
+        uses: actions/checkout@v4
+
+      - name: Установить Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Установить зависимости и пакет
         run: |
           python -m pip install --upgrade pip
           pip install ruff pytest
           pip install -e .
+
+      - name: Проверка форматирования (Ruff Format)
+        run: ruff format --check .
+
+      - name: Проверка линтером (Ruff Check)
+        run: ruff check .
+
+      - name: Запуск тестов (Pytest)
+        run: pytest
